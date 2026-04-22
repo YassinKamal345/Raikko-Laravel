@@ -1,65 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<title>Raikko</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAIKKO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
 
+<div class="noise-overlay"></div>
+
 <header class="header">
-
-<div class="left">
-
-    <div class="menu-container">
-        <span class="menu-btn">☰ Menú</span>
-
-        <div class="menu-dropdown">
-            <a href="/">Home</a>
-            <a href="/shop">Shop</a>
-            <a href="/cart">Cart</a>
+    <div class="header-left">
+        <div class="menu-container">
+            <span class="menu-btn"><span class="menu-lines"><span></span><span></span><span></span></span> Menú</span>
+            <div class="menu-dropdown">
+                <a href="/">Home</a>
+                <a href="/shop">Shop</a>
+                <a href="/cart">Cart</a>
+            </div>
         </div>
+        <form action="/shop" method="GET" class="search-form">
+            <input type="text" name="search" placeholder="Buscar">
+            <span class="search-icon">→</span>
+        </form>
     </div>
 
-    <form action="/shop" method="GET">
-        <input type="text" name="search" placeholder="Buscar">
-    </form>
+    <a href="/" class="logo">RAIKKO</a>
 
-</div>
+    <div class="header-right">
+        <span class="header-link">Llámenos</span>
 
-<a href="/" class="logo">RAIKKO</a>
+        @guest
+            <a href="/register" class="header-link">Registrarse</a>
+            <a href="/login" class="header-link">Inicia sesión</a>
+        @endguest
 
-<div class="right">
+        @auth
+            <span class="header-link">{{ auth()->user()->name }}</span>
+            @if(auth()->user()->role === 'admin')
+                <a href="/admin" class="header-link">Admin</a>
+            @endif
+            <form method="POST" action="/logout" style="display:inline;">
+                @csrf
+                <button class="logout-btn">Salir</button>
+            </form>
+        @endauth
 
-    <span>Llámenos</span>
-
-    @guest
-        <a href="/login">👤</a>
-    @endguest
-
-    @auth
-        <span>👤</span>
-
-        @if(auth()->user()->role === 'admin')
-            <a href="/admin">Admin</a>
-        @endif
-
-        <form method="POST" action="/logout" style="display:inline;">
-            @csrf
-            <button class="logout-btn">Logout</button>
-        </form>
-    @endauth
-
-    <a href="/cart">🛒</a>
-
-</div>
+        <a href="/cart" class="icon-btn cart-icon" title="Cart">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        </a>
+    </div>
 </header>
 
+<main>
 @yield('content')
+</main>
 
-<footer>
-<p>© 2026 Raikko</p>
-<p>+34 612 345 678</p>
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">RAIKKO</div>
+        <div class="footer-links">
+            <a href="/shop">Shop</a>
+            <a href="/cart">Cart</a>
+            <span>+34 612 345 678</span>
+        </div>
+        <div class="footer-copy">© 2026 Raikko. All rights reserved.</div>
+    </div>
 </footer>
 
 </body>

@@ -2,12 +2,12 @@
 
 @section('content')
 
-<div style="padding:60px; text-align:center;">
-
-<h2>Your Cart</h2>
-
-<p>Tu carrito está vacío.</p>
-
+<div class="cart-page">
+    <h1 class="cart-title">Your Cart</h1>
+    <div class="cart-empty">
+        <p>Tu carrito está vacío.</p>
+        <a href="/shop" class="btn-back">Ir a la tienda →</a>
+    </div>
 </div>
 
 @endsection
