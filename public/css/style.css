@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@300;400;500&display=swap');
+
+body{
+margin:0;
+background:#0a0a0a;
+color:white;
+font-family:'Inter', sans-serif;
+}
+
+a,
+a:visited,
+a:hover,
+a:active{
+color:white;
+text-decoration:none;
+}
+
+/* HEADER */
+.header{
+display:grid;
+grid-template-columns:1fr auto 1fr;
+align-items:center;
+padding:20px 40px;
+background:black;
+border-bottom:1px solid #222;
+}
+
+.left{
+display:flex;
+gap:20px;
+align-items:center;
+justify-self:start;
+min-width:250px;
+}
+
+.logo{
+justify-self:center;
+font-family:'Playfair Display', serif;
+letter-spacing:3px;
+font-size:18px;
+}
+
+.right{
+display:flex;
+gap:25px;
+align-items:center;
+justify-self:end;
+min-width:250px;
+justify-content:flex-end;
+}
+
+.cart{
+position:relative;
+}
+
+.cart-count{
+position:absolute;
+top:-8px;
+right:-10px;
+background:red;
+font-size:10px;
+padding:2px 6px;
+border-radius:50%;
+}
+
+a{
+color:white;
+text-decoration:none;
+}
+
+a:hover{
+color:white;
+text-decoration:none;
+}
+
+.logout-btn{
+background:none;
+border:none;
+color:white;
+cursor:pointer;
+}
+
+/* HERO */
+.hero{
+height:80vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+background:url('/img/hoodie1.png') center/cover no-repeat;
+}
+
+.hero h2{
+font-size:60px;
+margin:0;
+font-family:'Playfair Display', serif;
+}
+
+.hero p{
+opacity:0.7;
+}
+
+.btn{
+margin-top:20px;
+background:#ff2e2e;
+padding:12px 25px;
+color:white;
+text-decoration:none;
+}
+
+/* PRODUCTS */
+.products{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:30px;
+padding:60px;
+}
+
+@media(max-width:1024px){
+.products{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
+@media(max-width:600px){
+.products{
+grid-template-columns:1fr;
+}
+}
+
+.product{
+aspect-ratio:1/1;
+background:#181818;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:20px;
+border:1px solid #222;
+transition:0.3s;
+}
+
+.product:hover{
+transform:translateY(-5px);
+border-color:#444;
+}
+
+.product img{
+width:100%;
+height:200px;
+object-fit:contain;
+}
+
+footer{
+text-align:center;
+padding:30px;
+background:black;
+margin-top:40px;
+}
+
+.search input{
+background:#111;
+border:1px solid #333;
+color:white;
+padding:5px 10px;
+}
+
+input{
+background:#111;
+border:1px solid #333;
+color:white;
+padding:6px 10px;
+}
+
+.btn-view{
+display:inline-block;
+margin-top:10px;
+padding:8px 15px;
+border:1px solid #333;
+font-size:13px;
+}
+
+.btn-view:hover{
+background:#222;
+}
+
+.shop-container{
+background:#111;
+min-height:100vh;
+}
+
+.product-page{
+display:flex;
+gap:60px;
+padding:60px;
+align-items:center;
+}
+
+/* IMAGEN */
+.product-image img{
+width:400px;
+height:400px;
+object-fit:contain;
+}
+
+/* INFO */
+.product-info{
+background:#111;
+padding:30px;
+border:1px solid #222;
+max-width:400px;
+}
+
+.price{
+font-size:20px;
+margin:10px 0;
+}
+
+.shop-title{
+padding-left:60px;
+margin-top:40px;
+font-family:'Playfair Display', serif;
+}
+
+.menu-container{
+position:relative;
+}
+
+.menu-btn{
+cursor:pointer;
+}
+
+.menu-dropdown{
+display:none;
+position:absolute;
+top:30px;
+left:0;
+background:#111;
+border:1px solid #333;
+min-width:120px;
+z-index:1000;
+}
+
+.menu-dropdown a{
+display:block;
+padding:8px 12px;
+color:white;
+}
+
+.menu-dropdown a:hover{
+background:#222;
+}
+
+.menu-container:hover .menu-dropdown{
+display:block;
+}
