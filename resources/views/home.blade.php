@@ -49,7 +49,7 @@
         @foreach($products as $product)
         <div class="featured-item">
             <a href="/product/{{ $product->id }}" class="featured-img-wrap">
-                <img src="/img/{{ $product->image }}" alt="{{ $product->name }}">
+                <img src="/img/{{ $product->images->first()?->image ?? $product->image }}" alt="{{ $product->name }}">
                 <div class="featured-overlay">
                     <span class="featured-cta">Ver producto</span>
                 </div>

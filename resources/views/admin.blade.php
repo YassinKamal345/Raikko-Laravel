@@ -39,17 +39,49 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Imagen</label>
+                    <label>Tallas y Stock</label>
+                    <div class="sizes-grid">
+                        @php
+                            $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+                            $productSizes = isset($product) ? $product->sizes->keyBy('size') : [];
+                        @endphp
+                        @foreach($sizes as $size)
+                            <div class="size-input-group">
+                                <label>{{ $size }}</label>
+                                <input type="number" name="sizes[{{ $size }}]" placeholder="Stock" min="0" value="{{ $productSizes->get($size)?->stock ?? '' }}">
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Imágenes del Producto</label>
                     <div class="file-input-wrapper">
-                        <input type="file" name="image" id="image-input" accept="image/*">
-                        <label for="image-input" class="file-input-label">
-                            <span class="file-input-text">Seleccionar imagen</span>
+                        <input type="file" name="images[]" id="images-input" accept="image/*" multiple>
+                        <label for="images-input" class="file-input-label">
+                            <span class="file-input-text">Seleccionar imágenes (múltiples)</span>
                         </label>
                     </div>
-                    @if(isset($product) && $product->image)
-                        <div class="image-preview">
-                            <img src="/img/{{ $product->image }}" alt="{{ $product->name }}">
-                            <p>Imagen actual</p>
+                    @if(isset($product) && $product->images->count() > 0)
+                        <div class="images-preview">
+                            <p style="font-size: 11px; color: var(--white-dim); margin-bottom: 12px;">Imágenes actuales (arrastra para cambiar orden):</p>
+                            <div class="preview-grid" id="images-grid">
+                                @foreach($product->images as $index => $image)
+                                    <div class="preview-item" data-image-id="{{ $image->id }}" data-order="{{ $image->order }}">
+                                        <img src="/img/{{ $image->image }}" alt="{{ $product->name }}">
+                                        <div class="image-order-badge">{{ $index + 1 }}</div>
+                                        <div class="image-controls">
+                                            @if($index > 0)
+                                                <button type="button" class="btn-order-up" onclick="moveImage({{ $image->id }}, 'up')">↑</button>
+                                            @endif
+                                            @if($index < $product->images->count() - 1)
+                                                <button type="button" class="btn-order-down" onclick="moveImage({{ $image->id }}, 'down')">↓</button>
+                                            @endif
+                                            <button type="button" class="btn-delete-image" onclick="deleteImage({{ $image->id }})">×</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -78,7 +110,7 @@
                     @foreach($products as $prod)
                         <div class="product-row">
                             <div class="product-cell product-img">
-                                <img src="/img/{{ $prod->image }}" alt="{{ $prod->name }}">
+                                <img src="/img/{{ $prod->images->first()?->image ?? $prod->image }}" alt="{{ $prod->name }}">
                             </div>
                             <div class="product-cell product-info">
                                 <h3>{{ $prod->name }}</h3>
@@ -101,5 +133,58 @@
         </div>
     </div>
 </div>
+
+<script>
+function deleteImage(imageId) {
+    if (!confirm('¿Eliminar esta imagen?')) return;
+    
+    fetch('/admin/delete-image/' + imageId, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al eliminar imagen');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar imagen');
+    });
+}
+
+function moveImage(imageId, direction) {
+    fetch('/admin/reorder-image', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            image_id: imageId,
+            direction: direction
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error al cambiar orden');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al cambiar orden');
+    });
+}
+</script>
 
 @endsection

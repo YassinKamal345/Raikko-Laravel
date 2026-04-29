@@ -2,31 +2,83 @@
 
 @section('content')
 
-<div class="shop-page">
-    <div class="shop-hero">
-        <h1 class="shop-title">Shop</h1>
-        <p class="shop-count">{{ $products->count() }} productos</p>
-    </div>
-
-    <div class="products-grid">
-        @foreach($products as $product)
-        <div class="product-card">
-            <a href="/product/{{ $product->id }}" class="product-card-link">
-                <div class="product-card-img">
-                    <img src="/img/{{ $product->image }}" alt="{{ $product->name }}">
-                    <div class="product-card-overlay">
-                        <span>Ver producto →</span>
-                    </div>
+<div class="product-detail">
+    <div class="product-detail-container">
+        <div class="product-detail-gallery">
+            <div class="gallery-container">
+                <img id="mainImage" src="/img/{{ $product->images->first()?->image ?? $product->image }}" alt="{{ $product->name }}" class="gallery-main-image">
+                
+                @if($product->images->count() > 1)
+                    <button class="gallery-nav gallery-prev" onclick="previousImage()">❮</button>
+                    <button class="gallery-nav gallery-next" onclick="nextImage()">❯</button>
+                @endif
+            </div>
+            
+            @if($product->images->count() > 1)
+                <div class="gallery-thumbnails">
+                    @foreach($product->images as $index => $image)
+                        <img src="/img/{{ $image->image }}" 
+                             alt="{{ $product->name }}" 
+                             class="gallery-thumbnail {{ $index === 0 ? 'active' : '' }}"
+                             onclick="changeImage({{ $index }})">
+                    @endforeach
                 </div>
-                <div class="product-card-info">
-                    <h3 class="product-card-name">{{ $product->name }}</h3>
-                    <p class="product-card-price">{{ $product->price }} €</p>
-                </div>
-            </a>
-            <a href="/product/{{ $product->id }}" class="btn-view">View</a>
+            @endif
         </div>
-        @endforeach
+
+        <div class="product-detail-info">
+            <h1 class="product-detail-title">{{ $product->name }}</h1>
+            <p class="product-detail-price">{{ $product->price }} €</p>
+            <p class="product-detail-description">{{ $product->description ?? 'No hay descripción disponible' }}</p>
+            
+            <div class="product-sizes-section">
+                <label class="product-size-label">Selecciona una talla:</label>
+                <div class="product-sizes">
+                    @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL'] as $size)
+                        @php
+                            $productSize = $product->sizes->firstWhere('size', $size);
+                            $isAvailable = $productSize && $productSize->stock > 0;
+                        @endphp
+                        <label class="size-option {{ !$isAvailable ? 'disabled' : '' }}">
+                            <input type="radio" name="size" value="{{ $size }}" {{ !$isAvailable ? 'disabled' : '' }} required>
+                            <span class="size-label">{{ $size }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <p class="size-stock-info">Stock: <span id="size-stock">—</span></p>
+            </div>
+            
+            <button class="btn-add-cart" onclick="addToCart({{ $product->id }})">Añadir al carrito</button>
+        </div>
     </div>
 </div>
+
+<script>
+    let currentImageIndex = 0;
+    // @ts-ignore
+    const images = {!! json_encode($product->images->pluck('image')->toArray()) !!};
+
+    function changeImage(index) {
+        currentImageIndex = index;
+        updateImage();
+    }
+
+    function nextImage() {
+        currentImageIndex = (currentImageIndex + 1) % images.length;
+        updateImage();
+    }
+
+    function previousImage() {
+        currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+        updateImage();
+    }
+
+    function updateImage() {
+        document.getElementById('mainImage').src = '/img/' + images[currentImageIndex];
+        document.querySelectorAll('.gallery-thumbnail').forEach((thumb, index) => {
+            thumb.classList.toggle('active', index === currentImageIndex);
+        });
+    }
+</script>
 
 @endsection

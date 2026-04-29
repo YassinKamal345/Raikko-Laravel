@@ -12,4 +12,14 @@ class Product extends Model
         'image',
         'description'
     ];
+
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('order');
+    }
+
+    public function sizes()
+    {
+        return $this->hasMany(ProductSize::class)->orderByRaw("FIELD(size, 'XS', 'S', 'M', 'L', 'XL', 'XXL')");
+    }
 }

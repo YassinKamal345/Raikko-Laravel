@@ -13,7 +13,7 @@
         <div class="product-card">
             <a href="/product/{{ $product->id }}" class="product-card-link">
                 <div class="product-card-img">
-                    <img src="/img/{{ $product->image }}" alt="{{ $product->name }}">
+                    <img src="/img/{{ $product->images->first()?->image ?? $product->image }}" alt="{{ $product->name }}">
                     <div class="product-card-overlay">
                         <span>Ver producto →</span>
                     </div>
