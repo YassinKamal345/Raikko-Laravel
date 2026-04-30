@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAIKKO</title>
+<link rel="icon" href="/img/raikko_logo.jpg" type="image/jpeg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -24,24 +25,23 @@
                 <a href="/cart">Cart</a>
             </div>
         </div>
-        <form action="/shop" method="GET" class="search-form">
-            <input type="text" name="search" placeholder="Buscar">
-            <span class="search-icon">→</span>
-        </form>
     </div>
 
     <a href="/" class="logo">RAIKKO</a>
 
     <div class="header-right">
-        <span class="header-link">Llámenos</span>
-
         @guest
             <a href="/register" class="header-link">Registrarse</a>
             <a href="/login" class="header-link">Inicia sesión</a>
         @endguest
 
         @auth
-            <span class="header-link">{{ auth()->user()->name }}</span>
+            <a href="/profile" class="account-icon" title="Mi cuenta">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
             @if(auth()->user()->role === 'admin')
                 <a href="/admin" class="header-link">Admin</a>
             @endif

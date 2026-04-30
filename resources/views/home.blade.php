@@ -20,25 +20,43 @@
 </section>
 
 <section class="marquee-strip">
-    <div class="marquee-track">
-        <span>RAIKKO</span><span class="dot">·</span>
-        <span>STREETWEAR</span><span class="dot">·</span>
-        <span>SS26</span><span class="dot">·</span>
-        <span>MADE FOR THE BEST</span><span class="dot">·</span>
-        <span>RAIKKO</span><span class="dot">·</span>
-        <span>STREETWEAR</span><span class="dot">·</span>
-        <span>SS26</span><span class="dot">·</span>
-        <span>MADE FOR THE BEST</span><span class="dot">·</span>
-        <span>RAIKKO</span><span class="dot">·</span>
-        <span>STREETWEAR</span><span class="dot">·</span>
-        <span>SS26</span><span class="dot">·</span>
-        <span>MADE FOR THE BEST</span><span class="dot">·</span>
+    <div class="marquee-track" id="marquee-track">
         <span>RAIKKO</span><span class="dot">·</span>
         <span>STREETWEAR</span><span class="dot">·</span>
         <span>SS26</span><span class="dot">·</span>
         <span>MADE FOR THE BEST</span><span class="dot">·</span>
     </div>
 </section>
+
+<script>
+// Marquee infinito verdadero
+(function() {
+    const track = document.getElementById('marquee-track');
+    const originalContent = track.innerHTML;
+    
+    // Duplicar el contenido 3 veces para asegurar fluidez
+    track.innerHTML = originalContent + originalContent + originalContent + originalContent;
+    
+    let scrollPos = 0;
+    const scrollAmount = 1; // píxeles por frame
+    const speed = 0.5; // ajusta velocidad
+    
+    function animate() {
+        scrollPos += speed;
+        const contentWidth = track.scrollWidth / 4; // El ancho de UN set
+        
+        // Si alcanzamos el final de un set, reinicia suavemente
+        if (scrollPos >= contentWidth) {
+            scrollPos = 0;
+        }
+        
+        track.style.transform = `translateX(-${scrollPos}px)`;
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+})();
+</script>
 
 <section class="home-featured">
     <div class="section-header">

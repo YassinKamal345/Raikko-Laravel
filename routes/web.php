@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
 use Illuminate\Http\Request;
 
 // ─── HOME ────────────────────────────────────────────────
@@ -31,6 +32,17 @@ Route::get('/product/{id}', function ($id) {
 // ─── CART ────────────────────────────────────────────────
 Route::get('/cart', function () {
     return view('cart');
+});
+
+// ─── CHECKOUT ────────────────────────────────────────────
+Route::get('/checkout', function () {
+    return view('checkout');
+});
+
+Route::post('/checkout/process', function (Request $request) {
+    // Aquí se procesará el pago
+    // Por ahora, simplemente redireccionará con un mensaje de éxito
+    return redirect('/')->with('success', 'Pedido realizado con éxito');
 });
 
 // ─── ADMIN ───────────────────────────────────────────────

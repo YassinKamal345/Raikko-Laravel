@@ -35,20 +35,24 @@
                 <label class="product-size-label">Selecciona una talla:</label>
                 <div class="product-sizes">
                     @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL'] as $size)
-                        @php
-                            $productSize = $product->sizes->firstWhere('size', $size);
-                            $isAvailable = $productSize && $productSize->stock > 0;
-                        @endphp
-                        <label class="size-option {{ !$isAvailable ? 'disabled' : '' }}">
-                            <input type="radio" name="size" value="{{ $size }}" {{ !$isAvailable ? 'disabled' : '' }} required>
+                        <label class="size-option">
+                            <input type="radio" name="size" value="{{ $size }}" required>
                             <span class="size-label">{{ $size }}</span>
                         </label>
                     @endforeach
                 </div>
-                <p class="size-stock-info">Stock: <span id="size-stock">—</span></p>
+            </div>
+
+            <div class="product-quantity-section">
+                <label class="product-quantity-label">Cantidad:</label>
+                <div class="quantity-input">
+                    <button type="button" class="qty-btn" onclick="decreaseQty()">−</button>
+                    <input type="number" id="quantity" min="1" max="99" value="1" readonly>
+                    <button type="button" class="qty-btn" onclick="increaseQty()">+</button>
+                </div>
             </div>
             
-            <button class="btn-add-cart" onclick="addToCart({{ $product->id }})">Añadir al carrito</button>
+            <button class="btn-add-cart" onclick="addToCart({{ $product->id }}, '{{ $product->name }}', {{ $product->price }})">Añadir al carrito</button>
         </div>
     </div>
 </div>
@@ -78,6 +82,53 @@
         document.querySelectorAll('.gallery-thumbnail').forEach((thumb, index) => {
             thumb.classList.toggle('active', index === currentImageIndex);
         });
+    }
+
+    function increaseQty() {
+        const qtyInput = document.getElementById('quantity');
+        if (qtyInput.value < 99) {
+            qtyInput.value = parseInt(qtyInput.value) + 1;
+        }
+    }
+
+    function decreaseQty() {
+        const qtyInput = document.getElementById('quantity');
+        if (qtyInput.value > 1) {
+            qtyInput.value = parseInt(qtyInput.value) - 1;
+        }
+    }
+
+    function addToCart(productId, productName, productPrice) {
+        const selectedSize = document.querySelector('input[name="size"]:checked')?.value;
+        const quantity = parseInt(document.getElementById('quantity').value);
+
+        if (!selectedSize) {
+            alert('Por favor selecciona una talla');
+            return;
+        }
+
+        // Obtener carrito actual
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        // Buscar si el producto con esa talla ya existe
+        const existingItem = cart.find(item => item.productId == productId && item.size === selectedSize);
+
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({
+                productId: productId,
+                productName: productName,
+                productPrice: productPrice,
+                size: selectedSize,
+                quantity: quantity
+            });
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert('¡Producto añadido al carrito!');
+        document.getElementById('quantity').value = 1;
+        document.querySelector('input[name="size"]').checked = false;
     }
 </script>
 

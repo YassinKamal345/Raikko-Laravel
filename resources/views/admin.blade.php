@@ -43,7 +43,7 @@
                     <div class="sizes-grid">
                         @php
                             $sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-                            $productSizes = isset($product) ? $product->sizes->keyBy('size') : [];
+                            $productSizes = isset($product) ? $product->sizes->keyBy('size') : collect([]);
                         @endphp
                         @foreach($sizes as $size)
                             <div class="size-input-group">
