@@ -68,6 +68,7 @@
             <a href="/shop">Shop</a>
             <a href="/cart">Cart</a>
             <span>+34 612 345 678</span>
+            <a href="mailto:infoRaikko@gmail.com">infoRaikko@gmail.com</a>
         </div>
         <div class="footer-copy">© 2026 Raikko. All rights reserved.</div>
     </div>
