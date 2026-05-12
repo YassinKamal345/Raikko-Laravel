@@ -25,6 +25,11 @@
     <div class="checkout-container">
         <form id="checkout-form" method="POST" action="/checkout/process" class="checkout-form">
             @csrf
+            <input
+            type="hidden"
+            name="cart"
+            id="cart-input"
+            >
             
             <!-- PASO 1: DATOS -->
             <div class="checkout-section active" id="step-datos">
@@ -277,6 +282,25 @@ document.querySelectorAll('input[name="envio"]').forEach(input => {
         document.getElementById('city-section').style.display = showAddress ? 'block' : 'none';
     });
 });
+
+document
+.getElementById('checkout-form')
+.addEventListener(
+    'submit',
+    function () {
+
+        const cart =
+            localStorage.getItem(
+                'cart'
+            );
+
+        document
+        .getElementById(
+            'cart-input'
+        )
+        .value = cart;
+    }
+);
 </script>
 
 @endsection
