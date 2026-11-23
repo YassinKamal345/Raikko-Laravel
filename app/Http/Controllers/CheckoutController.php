@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\OutOfStockException;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ProductSize;
 
 class CheckoutController
 extends Controller
@@ -134,9 +137,147 @@ extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Create Order
+        | Stock + Order
         |--------------------------------------------------------------------------
+        | Everything runs in one transaction: if any size is out of stock,
+        | no stock is discounted and no order is saved.
         */
+
+        try {
+
+            DB::transaction(function () use (
+                $request,
+                $items,
+                $subtotal,
+                $shipping,
+                $total
+            ) {
+
+                $this->discountStock($items);
+
+                $this->createOrder(
+                    $request,
+                    $items,
+                    $subtotal,
+                    $shipping,
+                    $total
+                );
+            });
+
+        } catch (OutOfStockException $e) {
+
+            return redirect('/cart')
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
+        }
+
+        return redirect('/')
+            ->with(
+                'success',
+                'Pedido realizado correctamente'
+            )
+            ->with(
+                'order_placed',
+                true
+            );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Discount Stock
+    |--------------------------------------------------------------------------
+    | Products with sizes configured in the admin panel have stock control.
+    | Products without any size configured are sold without stock control.
+    */
+
+    private function discountStock(
+        array $items
+    ): void {
+
+        $needed = [];
+
+        foreach ($items as $item) {
+
+            $key =
+                $item['product']->id
+                . '|'
+                . $item['size'];
+
+            if (!isset($needed[$key])) {
+
+                $needed[$key] = [
+                    'product'  => $item['product'],
+                    'size'     => $item['size'],
+                    'quantity' => 0,
+                ];
+            }
+
+            $needed[$key]['quantity'] +=
+                $item['quantity'];
+        }
+
+        foreach ($needed as $line) {
+
+            $product = $line['product'];
+
+            if (
+                !ProductSize::where(
+                    'product_id',
+                    $product->id
+                )->exists()
+            ) {
+                continue;
+            }
+
+            $row = ProductSize::where(
+                    'product_id',
+                    $product->id
+                )
+                ->where(
+                    'size',
+                    $line['size']
+                )
+                ->lockForUpdate()
+                ->first();
+
+            if (
+                !$row
+                ||
+                $row->stock < $line['quantity']
+            ) {
+
+                throw new OutOfStockException(
+                    'No queda stock suficiente de '
+                    . $product->name
+                    . ' (talla '
+                    . ($line['size'] ?? '-')
+                    . '). Disponible: '
+                    . ($row->stock ?? 0)
+                );
+            }
+
+            $row->decrement(
+                'stock',
+                $line['quantity']
+            );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Order
+    |--------------------------------------------------------------------------
+    */
+
+    private function createOrder(
+        Request $request,
+        array $items,
+        float $subtotal,
+        float $shipping,
+        float $total
+    ): void {
 
         $order = Order::create([
 
@@ -210,11 +351,5 @@ extends Controller
                     $item['product']->price
             ]);
         }
-
-        return redirect('/')
-            ->with(
-                'success',
-                'Pedido realizado correctamente'
-            );
     }
 }

@@ -33,14 +33,26 @@
             
             <div class="product-sizes-section">
                 <label class="product-size-label">Selecciona una talla:</label>
+                @php
+                    // Sizes configured in the admin panel have stock control;
+                    // products without any size configured are sold without it.
+                    $stockBySize = $product->sizes->pluck('stock', 'size');
+                    $hasStockControl = $stockBySize->isNotEmpty();
+                @endphp
                 <div class="product-sizes">
                     @foreach(['XS', 'S', 'M', 'L', 'XL', 'XXL'] as $size)
-                        <label class="size-option">
-                            <input type="radio" name="size" value="{{ $size }}" required>
-                            <span class="size-label">{{ $size }}</span>
+                        @php
+                            $stock = $hasStockControl ? (int) ($stockBySize[$size] ?? 0) : 99;
+                        @endphp
+                        <label class="size-option" @if($stock < 1) style="opacity: .4; cursor: not-allowed;" title="Agotada" @endif>
+                            <input type="radio" name="size" value="{{ $size }}" data-stock="{{ min($stock, 99) }}" required @disabled($stock < 1)>
+                            <span class="size-label" @if($stock < 1) style="text-decoration: line-through;" @endif>{{ $size }}</span>
                         </label>
                     @endforeach
                 </div>
+                @if($hasStockControl && $stockBySize->max() < 1)
+                    <p class="product-size-label">Producto agotado</p>
+                @endif
             </div>
 
             <div class="product-quantity-section">
@@ -84,12 +96,25 @@
         });
     }
 
+    // Max quantity = stock of the selected size (99 if none selected)
+    function maxQty() {
+        const selected = document.querySelector('input[name="size"]:checked');
+        return selected ? parseInt(selected.dataset.stock) : 99;
+    }
+
     function increaseQty() {
         const qtyInput = document.getElementById('quantity');
-        if (qtyInput.value < 99) {
+        if (parseInt(qtyInput.value) < maxQty()) {
             qtyInput.value = parseInt(qtyInput.value) + 1;
         }
     }
+
+    document.querySelectorAll('input[name="size"]').forEach(input => {
+        input.addEventListener('change', () => {
+            const qtyInput = document.getElementById('quantity');
+            qtyInput.value = Math.max(1, Math.min(parseInt(qtyInput.value), maxQty()));
+        });
+    });
 
     function decreaseQty() {
         const qtyInput = document.getElementById('quantity');
