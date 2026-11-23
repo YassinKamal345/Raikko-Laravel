@@ -1,59 +1,101 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/img/raikko_logo.jpg" alt="Raikko logo" width="160">
 </p>
 
-## About Laravel
+<h1 align="center">Raikko — E-commerce with Laravel</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+  Online clothing store built with <b>Laravel 12 + Breeze</b> as a project for my ASIX studies at La Salle Gràcia.
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=flat-square&logo=php&logoColor=white">
+  <img src="https://img.shields.io/badge/Laravel-12-FF2D20?style=flat-square&logo=laravel&logoColor=white">
+  <img src="https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white">
+  <img src="https://img.shields.io/badge/Alpine.js-3-8BC0D0?style=flat-square&logo=alpinedotjs&logoColor=white">
+  <img src="https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white">
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ✨ Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+**Store**
+- Home page and product catalog (`/shop`)
+- Product page with image gallery and size selection
+- Shopping cart stored in the browser (`localStorage`)
+- Step-by-step checkout with shipping options (store pickup or home delivery +5 €) and 21% VAT
+- Orders and order lines saved to the database
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Users**
+- Registration, login and password reset (Laravel Breeze)
+- User profile editing
+- Roles: the first registered user becomes `admin`, the rest are `user`
 
-## Laravel Sponsors
+**Admin panel** (`/admin`)
+- Create, edit and delete products
+- Upload several images per product, delete them and change their order
+- Manage sizes per product
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 🧰 Tech stack
 
-### Premium Partners
+| Layer | Technology |
+|---|---|
+| Backend | PHP 8.2, Laravel 12, Laravel Breeze |
+| Frontend | Blade, Tailwind CSS, Alpine.js, Vite |
+| Database | SQLite (local) · PostgreSQL driver included in the Docker image |
+| Deploy | Docker (`php artisan serve` on port 10000, migrations run on start) |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## 🗂️ Data model
 
-## Contributing
+```
+User ──< Order ──< OrderItem >── Product ──< ProductImage
+                                    └──────< ProductSize
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🚀 Run locally
 
-## Code of Conduct
+Requirements: PHP 8.2+, Composer, Node.js 18+.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+git clone https://github.com/YassinKamal345/Raikko-Laravel.git
+cd Raikko-Laravel
 
-## Security Vulnerabilities
+composer install
+npm install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+cp .env.example .env
+php artisan key:generate
 
-## License
+touch database/database.sqlite
+php artisan migrate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+npm run dev          # in one terminal
+php artisan serve    # in another → http://localhost:8000
+```
+
+Register a user first: it will be the **admin** and can open `/admin`.
+
+## 🐳 Docker
+
+```bash
+docker build -t raikko .
+docker run -p 10000:10000 --env-file .env raikko
+```
+
+The container runs the migrations on start and serves the app on `http://localhost:10000`.
+
+## 📁 Structure
+
+```
+app/Http/Controllers/   Home, Shop, Product, Checkout and Admin controllers
+app/Models/             Product, ProductImage, ProductSize, Order, OrderItem, User
+resources/views/        Blade views (home, shop, product, cart, checkout, admin)
+database/migrations/    Database schema
+public/img/             Logo and product images
+public-branch/          Earlier static HTML/CSS version of the store
+```
+
+## 👤 Author
+
+**Yassin Kamal** — ASIX student · [Portfolio](https://portfolio-sand-eight-20.vercel.app) · [LinkedIn](https://www.linkedin.com/in/yassin-kamal-simo/)
