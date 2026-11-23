@@ -36,7 +36,7 @@ extends Controller
         );
 
         if (
-            !$cart
+            !is_array($cart)
             ||
             count($cart) === 0
         ) {
@@ -52,16 +52,71 @@ extends Controller
         |--------------------------------------------------------------------------
         | Prices
         |--------------------------------------------------------------------------
+        | The cart comes from the browser (localStorage), so only the product
+        | id, size and quantity are trusted. Name and price always come from
+        | the database to prevent price tampering.
         */
+
+        $validSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+        $items = [];
 
         $subtotal = 0;
 
         foreach ($cart as $item) {
 
+            $quantity = filter_var(
+                $item['quantity'] ?? null,
+                FILTER_VALIDATE_INT,
+                ['options' => ['min_range' => 1, 'max_range' => 99]]
+            );
+
+            $size = $item['size'] ?? null;
+
+            $product = Product::find(
+                $item['productId'] ?? null
+            );
+
+            if (
+                !$product
+                ||
+                $quantity === false
+                ||
+                ($size !== null && !in_array($size, $validSizes, true))
+            ) {
+
+                return redirect('/cart')
+                    ->with(
+                        'error',
+                        'Hay productos no válidos en tu carrito'
+                    );
+            }
+
+            $items[] = [
+                'product'  => $product,
+                'size'     => $size,
+                'quantity' => $quantity,
+            ];
+
             $subtotal +=
-                $item['productPrice']
+                $product->price
                 *
-                $item['quantity'];
+                $quantity;
+        }
+
+        if (
+            !in_array(
+                $request->envio,
+                ['recogida', 'domicilio'],
+                true
+            )
+        ) {
+
+            return redirect('/checkout')
+                ->with(
+                    'error',
+                    'Selecciona un método de envío'
+                );
         }
 
         $shipping =
@@ -131,7 +186,7 @@ extends Controller
         */
 
         foreach (
-            $cart as $item
+            $items as $item
         ) {
 
             OrderItem::create([
@@ -140,10 +195,10 @@ extends Controller
                     $order->id,
 
                 'product_id' =>
-                    $item['productId'],
+                    $item['product']->id,
 
                 'product_name' =>
-                    $item['productName'],
+                    $item['product']->name,
 
                 'size' =>
                     $item['size'],
@@ -152,7 +207,7 @@ extends Controller
                     $item['quantity'],
 
                 'price' =>
-                    $item['productPrice']
+                    $item['product']->price
             ]);
         }
 
