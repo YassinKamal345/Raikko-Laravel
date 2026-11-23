@@ -66,6 +66,11 @@
     @endif
 @endforeach
 
+@if (session('order_placed'))
+    {{-- The order was saved: empty the browser cart --}}
+    <script>localStorage.removeItem('cart');</script>
+@endif
+
 @yield('content')
 </main>
 

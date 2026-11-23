@@ -22,10 +22,10 @@
 
 **Store**
 - Home page and product catalog (`/shop`)
-- Product page with image gallery and size selection
+- Product page with image gallery and size selection (sold-out sizes are disabled)
 - Shopping cart stored in the browser (`localStorage`)
 - Step-by-step checkout with shipping options (store pickup or home delivery +5 €) and 21% VAT
-- Orders and order lines saved to the database
+- Orders and order lines saved to the database; the cart is emptied after a successful order
 
 **Users**
 - Registration, login and password reset (Laravel Breeze)
@@ -35,7 +35,7 @@
 **Admin panel** (`/admin`)
 - Create, edit and delete products
 - Upload several images per product, delete them and change their order
-- Manage sizes per product
+- Manage stock per size (XS–XXL); stock is discounted when an order is placed
 
 ## 🧰 Tech stack
 
