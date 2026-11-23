@@ -58,6 +58,14 @@
 </header>
 
 <main>
+@foreach (['success' => '#1e7e34', 'error' => '#b02a37'] as $type => $color)
+    @if (session($type))
+        <div role="alert" style="max-width: 1100px; margin: 16px auto; padding: 12px 16px; border-radius: 8px; color: #fff; background: {{ $color }};">
+            {{ session($type) }}
+        </div>
+    @endif
+@endforeach
+
 @yield('content')
 </main>
 
